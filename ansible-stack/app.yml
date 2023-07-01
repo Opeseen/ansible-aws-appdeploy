@@ -1,0 +1,63 @@
+- name: Set Up Application Runtime
+  hosts: server_2
+  tasks:
+    - name: Import Variables for APP Setup
+      include_vars: variables.yml
+
+    - name: Import Variables for RDS Setup
+      include_vars: config.yml
+
+    - name: Installing Python3 on the machine
+      apt:
+        name: "{{item}}"
+        state: present
+        update_cache: yes
+      loop:
+        - python3
+        - python3-pip
+      register: package_out
+    
+    - name: Check if "tmp/flask_python" Directory Exists
+      stat:
+        path: /tmp/flask_python
+      register: dir_out
+
+    - name: Delete the directory if it Exists
+      file:
+        path: /tmp/flask_python
+        state: absent
+      when: dir_out.stat.exists
+
+    - name: Clone git repo for source code
+      git:
+        repo: "{{git_url}}"
+        dest: /tmp/flask_python
+        version: python_sec
+      register: git_out
+
+    - name: Copy RDS Connection Configuration file to the Application for connectivity to the database
+      template:
+        src: templates/config.j2
+        dest: /tmp/flask_python/python-ansible-stack/pythonapp/files/config.py
+
+    - name: CD into the clonned repository and Install App Dependies
+      command: "pip install -r requirements.txt"
+      args:
+        chdir: /tmp/flask_python/python-ansible-stack/pythonapp/
+      register: pip_out
+
+    - name: SetUP systemd configuration file to start the App
+      template:
+        src: templates/python_svc.j2
+        dest: /etc/systemd/system/pythonapp.service
+
+    - name: Reload the systemd file
+      systemd:
+        daemon_reload: true
+
+    - name: Start and Enable the pythonapp using systemd
+      systemd:
+        name: pythonapp
+        state: started
+        enabled: true
+      register: sys_out

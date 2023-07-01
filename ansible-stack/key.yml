@@ -1,0 +1,24 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+    - name: Create EC2 Key Pair
+      ec2_key:
+        name: project-key
+        region: us-east-1
+      register: keyout
+
+    - name: Store Login Key
+      copy:
+        content: "{{keyout.key.private_key}}"
+        dest: ./project-key.pem
+        mode: 0400
+      when: keyout.changed
+
+    - name: Store Login key name as variable
+      blockinfile:
+        path: vars/variables.yml
+        marker: "# {mark} ANSIBLE MANAGED BLOCK FOR {{keyout.key.name}} KEYPAIR NAME"
+        block: |
+          key_name: {{keyout.key.name}}
+          

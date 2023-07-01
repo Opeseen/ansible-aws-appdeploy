@@ -1,0 +1,19 @@
+{% extends 'base.html' %} 
+{% block title %}ID Page{% endblock %}
+{% block content %}
+  <div class="modifyFormWrapper">
+    <form action="/note" method="POST">
+      <div class="inputWrapper">
+        <h2 style="color: brown; text-align: center;" >Enter a note id</h2>
+        <div style="text-align: center;" class="inputLabel">Note Id</div>
+        <input style="border-radius: 5px; font-size: larger;" type="text" name="note_id" placeholder="Enter Note ID Here" required/>
+      </div>
+      <div class="inputWrapper ctaWrapper">
+        <button type="submit" class="cta blue">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+  </script>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html' %} 
+{% block title %}Note Edit | Delete Page{% endblock %}
+  
+{% block content %}
+  <h2>You can either update or delete your note on this page</h2>
+  <div class="formWrapper">
+      <form id="modifyNote" action="/update" method="POST">
+        <div class="inputWrapper">
+          <div class="inputLabel">NOTE ID</div>
+          <input type="text" name="note_id" value="{{data.id}}" readonly/>
+        </div>
+          <div class="inputWrapper">
+            <div class="inputLabel">NOTE</div>
+            <input type="text" name="note" value="{{data.note}}"/>
+          </div>
+          <div class="inputWrapper">
+              <div class="inputLabel">NOTE STATUS</div>
+              <select name="status" id="status">
+                <option value="{{data.status}}">{{data.status}}</option>
+              </select>
+            </div>
+          <div class="inputWrapper ctaWrapper">
+            <button type="submit" class="cta blue">Update Note</button>
+          </div>
+        </form>
+  </div>
+  <h2>Delete Your Note</h2>
+<div class="formWrapper">
+  <form id="deleteNote" action="/delete" method="POST">
+    <input type="hidden" name="note_id" value="{{data.id}}"/>
+    <div class="warning">Warning: This action cannot be undone. Dont click this button on accident!</div>
+    <div class="inputWrapper ctaWrapper">
+      <button type="submit" class="cta red">Delete Note</button>
+    </div>
+  </form>
+</div>
+
+
+<script>
+const selectForm = document.getElementById("status");
+let presentFormValue
+const appendedFormValue = ['COMPLETED','UNCOMPLETED','PARTIALLY COMPLETED']
+
+for (var i = 0; i < selectForm.length; i++) {
+  const option = selectForm.options[i];
+  presentFormValue = option.value;
+}
+appendedFormValue.forEach((result) =>{
+  const addElement = document.createElement("option");
+  if(result !== presentFormValue){
+    addElement.text = result;
+    selectForm.add(addElement);
+  }
+})
+</script>
+
+{% endblock %}
+
+// var id = {{data.id}};
+// var note = {{data.note}}
+
+// let form = document.getElementById('modifyNote');
+// form.elements['note_id'].value = id
+// console.log(note)
+// form.elements['note'].value = note
+// form.elements['status'].value = requestData
+//  
+<!-- <script> -->
+  // var jsonData = JSON.parse('{{ data|safe}}');
+//   console.log(jsonData.id)
+//   let form = document.getElementById('modifyNote');
+//   form.elements['note'].value = jsonData.note
+//   form.elements['status'].value = jsonData.status
+  
+<!-- // </script> -->

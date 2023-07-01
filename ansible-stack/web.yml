@@ -1,0 +1,39 @@
+- name: Setup Nginx Server
+  hosts: server_1
+  gather_facts: no
+  tasks:
+    - name: Installing Nginx Service
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Starting & Enabling Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Disabling the current Nginx default website
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Deploying Nginx config file
+      template:
+        src: templates/nginxconf.j2
+        dest: /etc/nginx/sites-available/pythonapp
+
+    - name: Enabling the application to be reacheable on the website
+      file:
+        src: /etc/nginx/sites-available/pythonapp
+        dest: /etc/nginx/sites-enabled/pythonapp
+        state: link
+      notify:
+        - Restart Nginx
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted

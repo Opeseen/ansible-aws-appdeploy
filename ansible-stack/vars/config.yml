@@ -1,0 +1,4 @@
+# Database Configuration File
+dbuser: admin
+dbpass: admin1234
+dbname: tododb01

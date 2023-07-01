@@ -1,0 +1,80 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+    - name: Import variables for Security Group Setup
+      include_vars: variables.yml
+
+    - name: Create Security group for Load balancer
+      ec2_group:
+        name: lb_SG
+        description: Security Group for the Load balancer
+        region: "{{region}}"
+        vpc_id: "{{vpcid}}"
+        rules:
+        - proto: tcp
+          from_port: 80
+          to_port: 80
+          cidr_ip: 0.0.0.0/0
+          rule_desc: Allow HTTP from any where
+        tags:
+          Name: LB-SG
+      register: lb_SG_out
+
+    - name: Create Security group for all host instance
+      ec2_group:
+        name: projectSG
+        description: Allow SSH connection
+        region: "{{region}}"
+        vpc_id: "{{vpcid}}"
+        purge_rules: false
+        rules:
+        - proto: tcp
+          from_port: 22
+          to_port: 22
+          cidr_ip: 0.0.0.0/0
+          rule_desc: Allow SSH 
+        - proto: tcp
+          from_port: 80
+          to_port: 80
+          group_id: "{{lb_SG_out.group_id}}"
+          rule_desc: Allow connection from load balancer security Group
+        tags:
+          Name: Control-SG
+      register: controlSG_out
+
+    - name: Update security group for all host
+      ec2_group:
+        name: projectSG
+        description: Security group update
+        region: "{{region}}"
+        vpc_id: "{{vpcid}}"
+        purge_rules: False
+        rules:
+        - proto: all
+          group_id: "{{controlSG_out.group_id}}"
+          rule_desc: Allow all traffic from within
+    
+    - name: Create Security group for RDS Database
+      ec2_group:
+        name: rdsSG
+        description: Allow Connection from the application SG
+        region: "{{region}}"
+        vpc_id: "{{vpcid}}"
+        rules:
+          - proto: tcp
+            from_port: 3306
+            to_port: 3306
+            group_id: "{{controlSG_out.group_id}}"
+        tags:
+          Name: rds-SG
+      register: rdsSG_out
+    
+    - name: Store RDS Security group id
+      blockinfile:
+        path: vars/variables.yml
+        marker: "# {mark} ANSIBLE MANAGED BLOCK FOR SECURITY GROUP VARIABLES"
+        block: |
+          rdsSG_id: {{rdsSG_out.group_id}}
+          controlSG_id: {{controlSG_out.group_id}}
+          lbSG_id: {{lb_SG_out.group_id}}

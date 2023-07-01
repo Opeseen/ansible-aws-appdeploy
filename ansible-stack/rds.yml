@@ -1,0 +1,52 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+    - name: Import Variables for VPC Setup
+      include_vars: variables.yml
+    
+    - name: Import Variables for RDS Setup
+      include_vars: config.yml
+
+    - name: Setup RDS Subnet group
+      rds_subnet_group:
+        state: present
+        region: "{{region}}"
+        name: projectdb-subnet
+        description: Subnet group for the RDS database
+        subnets:
+          - "{{pubsub1id}}"
+          - "{{pubsub2id}}"
+        tags:
+          Name: projectdb-subnet
+      register: subnet_out
+
+    - name: SetUp RDS DB instance
+      rds_instance:
+        engine: mysql
+        engine_version: 8.0.31
+        instance_type: db.t2.micro
+        db_instance_identifier: flaskappdb
+        region: "{{region}}"
+        allocated_storage: 10
+        db_name: "{{dbname}}"
+        db_subnet_group_name: "{{subnet_out.subnet_group.db_subnet_group_name}}"
+        vpc_security_group_ids: "{{rdsSG_id}}"
+        master_user_password: "{{dbpass}}"
+        master_username: "{{dbuser}}"
+        publicly_accessible: False
+        skip_final_snapshot: true
+        storage_type: gp2
+        tags:
+          Name: PROJECT_DB
+      register: db_out
+
+    - debug:
+        var: db_out.endpoint.address
+    
+    - name: Store DB connection Endpoint as a variables
+      blockinfile:
+        path: vars/config.yml
+        marker: "# {mark} ANSIBLE MANAGED BLOCK FOR DB ENDPOINT"
+        block: |
+          dbendpoint: {{db_out.endpoint.address}}

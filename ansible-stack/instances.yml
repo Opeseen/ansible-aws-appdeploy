@@ -1,0 +1,94 @@
+- hosts: localhost
+  connection: local
+  become: yes
+  tasks:
+    - name: Import Variables for VPC Setup
+      include_vars: variables.yml
+
+    - name: SetUP Application runtime enviroment instance
+      ec2:
+        key_name: "{{key_name}}"
+        region: "{{region}}"
+        instance_type: t2.micro
+        image: "{{app_ami}}"
+        wait: yes
+        wait_timeout: 300
+        instance_tags:
+          Name: app_host
+        exact_count: 1
+        count_tag:
+          Name: app_host
+        group_id: "{{controlSG_id}}"
+        vpc_subnet_id: "{{pubsub1id}}"
+      register: app_out
+
+    - name: SetUP User Web interface application enviroment instance
+      ec2:
+        key_name: "{{key_name}}"
+        region: "{{region}}"
+        instance_type: t2.micro
+        image: "{{web_ami}}"
+        wait: yes
+        wait_timeout: 300
+        instance_tags:
+          Name: web_host
+        exact_count: 1
+        count_tag:
+          Name: web_host
+        group_id: "{{controlSG_id}}"
+        vpc_subnet_id: "{{pubsub2id}}"
+      register: web_out
+
+    - name: Setup a Load balancer
+      ec2_elb_lb:
+        name: 'project-lb'
+        region: "{{region}}"
+        state: present
+        instance_ids:
+          - "{{web_out.tagged_instances[0].id}}"
+        purge_instance_ids: true
+        security_group_ids: "{{lbSG_id}}"
+        subnets:
+         - "{{pubsub1id}}"
+         - "{{pubsub2id}}"
+         - "{{pubsub3id}}"
+        listeners:
+          - protocol: http
+            load_balancer_port: 80
+            instance_port: 80
+        
+    - name: Store instance Private IP's as Variables in [vars File]
+      blockinfile:
+        path: vars/variables.yml
+        marker: "# {mark} ANSIBLE MANAGED BLOCK FOR INSTANCE PRIVATE IP'S VARIBLES"
+        block: |
+          web_private_ip: "{{web_out.tagged_instances[0].private_ip}}"
+          app_private_ip: "{{app_out.tagged_instances[0].private_ip}}"
+        
+    - name: Store Ansible Inventory File For Connectivity
+      blockinfile:
+        path: vars/inventory
+        marker: "# {mark} ANSIBLE MANAGED BLOCK FOR INSTANCE PRIVATE IP'S VARIBLES"
+        create: true
+        block: |
+          web ansible_host={{web_out.tagged_instances[0].private_ip}}
+          app ansible_host={{app_out.tagged_instances[0].private_ip}}
+          local ansible_host=127.0.0.1 ansible_connection=local
+
+          [server_1]
+          web
+
+          [server_2]
+          app
+
+          [control]
+          local
+
+          [stack_inst:children]
+          server_1
+          server_2
+
+          [stack_inst:vars]
+          ansible_user=ubuntu
+          ansible_ssh_private_key_file=project-key.pem
+    
