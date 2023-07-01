@@ -35,41 +35,22 @@
   </form>
 </div>
 
-
 <script>
-const selectForm = document.getElementById("status");
-let presentFormValue
-const appendedFormValue = ['COMPLETED','UNCOMPLETED','PARTIALLY COMPLETED']
+  const selectForm = document.getElementById("status");
+  let presentFormValue
+  const appendedFormValue = ['COMPLETED','UNCOMPLETED','PARTIALLY COMPLETED']
 
-for (var i = 0; i < selectForm.length; i++) {
-  const option = selectForm.options[i];
-  presentFormValue = option.value;
-}
-appendedFormValue.forEach((result) =>{
-  const addElement = document.createElement("option");
-  if(result !== presentFormValue){
-    addElement.text = result;
-    selectForm.add(addElement);
+  for (var i = 0; i < selectForm.length; i++) {
+    const option = selectForm.options[i];
+    presentFormValue = option.value;
   }
-})
+  appendedFormValue.forEach((result) =>{
+    const addElement = document.createElement("option");
+    if(result !== presentFormValue){
+      addElement.text = result;
+      selectForm.add(addElement);
+    }
+  })
 </script>
 
 {% endblock %}
-
-// var id = {{data.id}};
-// var note = {{data.note}}
-
-// let form = document.getElementById('modifyNote');
-// form.elements['note_id'].value = id
-// console.log(note)
-// form.elements['note'].value = note
-// form.elements['status'].value = requestData
-//  
-<!-- <script> -->
-  // var jsonData = JSON.parse('{{ data|safe}}');
-//   console.log(jsonData.id)
-//   let form = document.getElementById('modifyNote');
-//   form.elements['note'].value = jsonData.note
-//   form.elements['status'].value = jsonData.status
-  
-<!-- // </script> -->
