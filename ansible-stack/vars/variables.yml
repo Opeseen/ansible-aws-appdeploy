@@ -1,0 +1,29 @@
+# AMI variables
+web_ami: ami-0261755bbcb8c4a84
+app_ami: ami-0261755bbcb8c4a84
+
+# VPC variables
+vpc_name: nodejs_vpc
+
+# VPC range
+vpcCidr: 172.20.0.0/16
+
+# Subnet range
+PubSub1Cidr: '172.20.1.0/24'
+PubSub2Cidr: '172.20.2.0/24'
+PubSub3Cidr: '172.20.3.0/24'
+
+# Zone names
+zone1: us-east-1a
+zone2: us-east-1b
+zone3: us-east-1c
+
+# region
+region : us-east-1
+
+# RDS Configurations
+dbuser: admin
+dbpass: admin1234
+
+# GitHub URL
+git_url: https://github.com/Opeseen/Ansible_tier_web_app.git

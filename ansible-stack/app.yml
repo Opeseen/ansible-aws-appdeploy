@@ -1,0 +1,57 @@
+- name: Set Up Tasks
+  hosts: server_2
+  tasks:
+    - name: Import Variables for APP Setup
+      include_vars: variables.yml
+
+    - name: Installing NODEJS and NPM Packages
+      apt:
+        name: "{{item}}"
+        state: present
+        update_cache: yes
+      loop:
+        - nodejs
+        - npm
+      register: package_out
+
+    - name: Check if "tmp/nodejs" Directory Exists
+      stat:
+        path: /tmp/nodejs
+      register: dir_out
+
+    - name: Clone git repo for source code when the Directory doesn't exists
+      git:
+        repo: "{{git_url}}"
+        dest: /tmp/nodejs
+        version: master
+      when: not dir_out.stat.exists
+      register: git_out
+
+    - name: Copy Database Connection Configuration file
+      template:
+        src: templates/config.j2
+        dest: /tmp/nodejs/app/database/config.js
+
+    - name: CD into the clonned repository and Install NPM modules
+      command: "npm install"
+      args:
+        chdir: /tmp/nodejs/app
+      when: git_out.changed
+      register: npm_out
+
+    - name: SetUP systemd configuration file to start the App
+      template:
+        src: templates/nodejs_svc.j2
+        dest: /etc/systemd/system/nodejsapp.service
+
+    - name: Reload the systemd file
+      systemd:
+        daemon_reload: true
+
+    - name: Start and Enable the nodejsapp using systemd
+      systemd:
+        name: nodejsapp
+        state: started
+        enabled: true
+      register: sys_out
+
