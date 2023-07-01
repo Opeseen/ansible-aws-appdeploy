@@ -7,7 +7,7 @@
     - name: Import Variables for RDS Setup
       include_vars: config.yml
 
-    - name: Installing Python3 on the machine
+    - name: Installing Python3 and pip on the machine
       apt:
         name: "{{item}}"
         state: present
