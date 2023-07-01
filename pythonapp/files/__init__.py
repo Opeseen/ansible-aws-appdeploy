@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy;
 import mysql.connector
-import os;
 from .config import connection
 
 db = SQLAlchemy()
