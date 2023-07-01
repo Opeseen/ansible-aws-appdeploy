@@ -38,12 +38,12 @@
     - name: Copy RDS Connection Configuration file to the Application for connectivity to the database
       template:
         src: templates/config.j2
-        dest: /tmp/flask_python/python-ansible-stack/pythonapp/files/config.py
+        dest: /tmp/flask_python/pythonapp/files/config.py
 
     - name: CD into the clonned repository and Install App Dependies
       command: "pip install -r requirements.txt"
       args:
-        chdir: /tmp/flask_python/python-ansible-stack/pythonapp/
+        chdir: /tmp/flask_python/pythonapp/
       register: pip_out
 
     - name: SetUP systemd configuration file to start the App
