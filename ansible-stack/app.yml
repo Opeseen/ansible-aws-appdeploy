@@ -32,7 +32,7 @@
       git:
         repo: "{{git_url}}"
         dest: /tmp/flask_python
-        version: python_sec
+        version: python_sec-ansible-jenkins
       register: git_out
 
     - name: Copy RDS Connection Configuration file to the Application for connectivity to the database
