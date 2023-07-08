@@ -11,7 +11,10 @@ pipeline{
           credentialsId: "appLogin",
           disableHostKeyChecking: true,
           become: true,
-          becomeUser: "root"
+          becomeUser: "root",
+          extraVars: [
+            dbendpoint: "flaskappdb.cfzrgfw3zego.us-east-1.rds.amazonaws.com"
+          ]
         ])
       } 
 
