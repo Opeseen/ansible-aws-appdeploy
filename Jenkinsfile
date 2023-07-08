@@ -5,7 +5,7 @@ pipeline{
       steps {
         ansiblePlaybook('ansible-stack/app.yml') {
           inventoryPath('ansible-stack/jenkins_ansible_inventory')
-          colorized: true
+          colorizedOutput(true)
           credentialsId('appLogin')
           hostKeyChecking(false)
           become(true)
