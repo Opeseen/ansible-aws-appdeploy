@@ -5,10 +5,13 @@
 
   <div class="container">
     <h3 style="color: brown; text-align: center;">WELCOME TO YOUR NOTE DASHBOARD</h3>
-
+    <div id="msg" class="flashMessages">
+      <br>
+    </div>
     <table class="table table-fluid" id="myTable">
       <thead>
         <tr>
+          <th><input id="check_all" type="checkbox"></th>
           <th>ID</th>
           <th>NOTE</th>
           <th>NOTE STATUS</th>
@@ -18,6 +21,7 @@
       <tbody>
         {% for rows in data %}
               <tr>
+                <td><input type="checkbox" name="row-check" value="{{ rows['id'] }}"></td>
                 <td>{{rows['id']}}</td>
                 <td class="noteContent">{{rows['note']}}</td>
                 <td>{{rows['status']}}</td>
@@ -28,7 +32,7 @@
     </table>
   </div>
   <div class="ctaWrapper">
-    <a class="modifyNote red" href="enter-note-id">Update/Delete a note</a>
+    <a class="modifyNote red" href="enter-note-id">Modify Note</a>
+    <button class="modifyNote green" id="multiple_delete">Delete Selection</button>
   </div>
-
 {% endblock %}
