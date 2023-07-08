@@ -9,7 +9,9 @@ pipeline{
           installation: "ansible",
           colorized: true,
           credentialsId: "appLogin",
-          disableHostKeyChecking: true
+          disableHostKeyChecking: true,
+          become: true,
+          becomeUser: "root"
         ])
       } 
 
