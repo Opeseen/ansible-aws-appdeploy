@@ -3,14 +3,14 @@ pipeline{
   stages{
     stage('CICD with ansible-jenkins'){
       steps {
-        ansiblePlaybook{[
+        ansiblePlaybook([
           inventory: "ansible-stack/jenkins_ansible_inventory",
           playbook: "ansible-stack/app.yml",
           installation: "ansible",
           colorized: true,
           credentialsId: "appLogin",
           disableHostKeyChecking: true
-        ]}
+        ])
       } 
 
     }
