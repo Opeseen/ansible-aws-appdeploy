@@ -62,10 +62,9 @@ $(function(){
                 $("#msg").html("<span class='flash red'>" + textStatus + " " + errorThrown + "</span>");
               }
             });
-          
-          }else{
-            bootbox.alert("Selected items cancelled for deletion")
+
           }
+          
         }
 
       });    
