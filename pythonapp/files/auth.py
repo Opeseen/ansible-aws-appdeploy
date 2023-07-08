@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for;
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify;
 from .models import Record;
 from . import db;
 
@@ -52,7 +52,7 @@ def update():
                 db.session.commit()    
                 flash('Your note has been successfully updated', category='success')
                 return redirect(url_for('views.home'))
-            except:
+            except Exception as e:
                 flash('There was an error while updating the note', category='error')
                 return redirect(url_for('views.home'))
       
@@ -72,3 +72,62 @@ def delete():
             flash('There was an error while deleting your note', category='error')
             return redirect(url_for('views.home'))
     return redirect(url_for('views.home'))
+
+@auth.route('/deleteSelected',methods=['POST','GET'])
+def deleteSelected():
+    if request.method == 'POST':
+        payload = request.json['ids']
+        if payload:
+            payload = payload.split(',')
+            try:
+                for ids in payload:
+                    noteid = Record.query.filter_by(id=(ids)).first()
+                    db.session.delete(noteid)
+                    db.session.commit()
+                response = jsonify('<span class=\'flash green\'>Your note has been successfully deleted</span>')
+                response.status_code = 200
+                return response
+            except:
+                response = jsonify('<span class=\'flash red\'>OOPS, an internal error occur during deletion</span>')
+                response.status_code = 500
+                return response
+    return redirect(url_for('views.home'))
+
+# return render_template('note_page.html')
+# noteid = int(request.args.get('note_id'))
+# if request.method == 'GET': 
+    # for x,y in noteid.items():
+    #     print(x,y)
+    
+    # print(noteid)
+    
+    
+# if request.method == 'POST':
+    # print(g.notesid)
+    # print("hello")
+    # return render_template('home.html')
+#     note = request.form.get('note').upper().strip()
+#     status = request.form.get('status').upper().strip()
+#     print(note,status)
+    # notesid = int(request.args.get('note_id'))
+    # print(notesid)
+    # note = request.form.get('note').upper().strip()
+    # status = request.form.get('status').upper().strip()
+    # 
+    # dictData = {
+    #     "id" : data.id,
+    #     "status" : data.status,
+    #     "note" : data.note
+    # }
+    # jsonData = json.dumps(dictData)
+    # print(jsonData)
+
+
+#     try:
+#         noteid.note = note
+#         noteid.status = status
+#         db.session.commit()    
+#         flash('Your note has been successfully updated', category='success')
+#         return render_template('home.html')
+#     except:
+#         flash('There was an error while updating the note')

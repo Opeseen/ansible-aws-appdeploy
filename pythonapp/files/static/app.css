@@ -278,11 +278,24 @@ td a, td a:hover, td a:active{
 
 .noteContent{
   padding: 25px;
-  width: 600px;
+  width: 500px;
 }
 
 .modifyNote.red{
   background-color: rgba(255, 0, 0, 0.771) !important;
+  color: #fff;
+  border-radius: 20px;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-align: center;
+  display: inline-block;
+  padding: 12px;
+  width: 150px;
+  font-style: italic
+}
+
+.modifyNote.green{
+  background-color: green !important;
   color: #fff;
   border-radius: 20px;
   text-transform: uppercase;
