@@ -1,0 +1,16 @@
+# BEGIN ANSIBLE MANAGED BLOCK FOR INSTANCE PRIVATE IP'S VARIBLES
+web ansible_host=172.20.2.38
+app ansible_host=172.20.1.213
+
+[server_1]
+web
+
+[server_2]
+app
+
+[stack_inst:children]
+server_1
+server_2
+
+[stack_inst:vars]
+# END ANSIBLE MANAGED BLOCK FOR INSTANCE PRIVATE IP'S VARIBLES
