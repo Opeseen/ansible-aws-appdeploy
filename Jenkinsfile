@@ -13,7 +13,7 @@ pipeline{
           become: true,
           becomeUser: "root",
           extraVars: [
-            dbendpoint: "dbEndpoint"
+            dbendpoint: "flaskappdb.cfzrgfw3zego.us-east-1.rds.amazonaws.com"
           ]
         ])
       } 
