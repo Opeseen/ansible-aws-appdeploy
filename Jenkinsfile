@@ -1,5 +1,9 @@
 pipeline{
   agent any
+
+  enviroment{
+    dbEndpoint = credentials('dbEndpoint')
+  }
   stages{
     stage('CICD with ansible-jenkins'){
       steps {
@@ -13,7 +17,7 @@ pipeline{
           become: true,
           becomeUser: "root",
           extraVars: [
-            dbendpoint: "flaskappdb.cfzrgfw3zego.us-east-1.rds.amazonaws.com"
+            dbendpoint: "${dbEndpoint}"
           ]
         ])
       } 
