@@ -13,7 +13,7 @@ pipeline{
           become: true,
           becomeUser: "root",
           extraVars: [
-            dbendpoint: credentials('dbEndpoint')
+            dbendpoint: "dbEndpoint"
           ]
         ])
       } 
