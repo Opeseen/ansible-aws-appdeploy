@@ -1,10 +1,10 @@
 pipeline{
   agent any
 
-  enviroment {
+  environment {
     dbEndpoint = credentials('dbEndpoint')
   }
-  
+
   stages{
     stage('CICD with ansible-jenkins'){
       steps {
